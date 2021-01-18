@@ -1,20 +1,17 @@
 import * as Comlink from "comlink"
 
-const myValue = 42;
 class MyClass {
     logSomething() {
-        console.log(`myValue=${myValue}`)
+        console.log("这是一个comlink演示")
     }
     computeSth(n,m, t){
         let a = 0;
-        for(let i=9000000000; i>0; i--){
-            a += 2
+        for(let i=3000000000; i>0; i--){
+            a += 1
         }
-        console.log(a + '###################' + a)
-        console.log(n + m)
         let r = n+m
+        console.log('###################' + '线程' + t + '执行完成，' + '循环' + a +'次')
         return new Promise((resolve, reject)=>{
-            console.log("成功: " + t)
             resolve({t, r})
             reject(t)
         })

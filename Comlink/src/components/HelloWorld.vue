@@ -33,6 +33,7 @@ export default {
     return{
       n1:0,
       n2:0,
+      num:0,
       instances:[],
       MClass:Object,
       op:""
@@ -48,20 +49,31 @@ export default {
     async computeNumber(n, m){
       const obj = Comlink.wrap(new Worker('../test.worker.js', { type: 'module' }))
       let instance = await new obj();
-      console.log("Start thread: " + this.instances.length)
-      this.instances.push(instance)
-      instance.computeSth(Number(n), Number(m), this.instances.length).then(({i, r})=> {
-          console.log(`第${i}线程执行成功`)
-          this.op += `\n第${i}线程执行结果： ${n} + ${m} = ${r}`
+      let threadNumber = this.num;
+      this.num++
+      console.log("Start thread: " + threadNumber)
+      instance.computeSth(Number(n), Number(m), threadNumber).then(({t, r})=> {
+        console.log(`第${t}线程执行成功`);
+        this.op += `\n第${t}线程执行结果： ${n} + ${m} = ${r}`;
+        this.deleteThread(t)
         }, (i)=>{
             console.log(`第${i}线程执行失败`)
       }
       )
+      this.instances.push({number:threadNumber, instance})
+    },
+    deleteThread(trN){
+      for(let i=0; i<this.instances.length; ++i){
+        if(this.instances[i].number === trN){
+          this.instances.splice(i, 1)
+          break;
+        }
+      }
     }
   },
   watch: {
     n1:function () {
-      console.log("N1 changed")
+      console.log("number1 changed")
     },
     n2:function () {
       this.computeNumber(this.n1, this.n2)
